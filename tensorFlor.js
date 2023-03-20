@@ -1,35 +1,37 @@
 import * as tf from '@tensorflow/tfjs'
 import  inputs from './test.json' assert { type: "json" };
-import { getApiData, toJsonFile } from './getApiData.js';
-// Model configuration
+import { toJsonFile } from './getApiData.js';
+
+
+let arr = inputs
+
+let x= arr.map(e=> parseInt(new Date(e.created_at).getSeconds()))
+
+
+console.log(x)
+let y = arr.map(e=>parseFloat(e.crash_point))
+
+const xTrain = tf.tensor1d(x);
+
+const yTrain = tf.tensor1d(y)
+
 const model = tf.sequential();
-model.add(tf.layers.dense({inputShape: [1], units: 1, useBias: true}));
-model.add(tf.layers.dense({units: 1, activation: 'sigmoid'}));
-model.compile({ loss: 'binaryCrossentropy', optimizer: 'sgd' });
+model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 
-// Input data
-// Array of days, and their capacity used out of 
-// 100% for 5 hour period
+// compilar o modelo
+model.compile({ loss: 'meanSquaredError', optimizer: 'Adamax' });
 
-let data = inputs.map(e=>parseFloat(e))
-
-let sort = data.map(e=>Math.floor(Math.random() * e))
-
-console.log(sort)
-
-const xs = tf.tensor2d(data, [data.length, 1]);
-
-// Labels
-const ys = tf.tensor2d(sort, [sort.length, 1])
-console.log(ys)
-
-// Train the model using the data.
-model.fit(xs, ys).then(async () => {
-    const FirstRes = await getApiData('2023-03-16', '2023-03-16', 1)
-    let records = FirstRes.records.map(e=>parseFloat(e.crash_point))
-  const res =  await model.predict(tf.tensor2d(records, [records.length, 1])).array();
-  toJsonFile(res, "resultado")
+model.fit(xTrain, yTrain, { epochs: 100 }).then(async () => {
+  // fazer uma previsão com o modelo
+  const created_at = new Date('2023-03-11T00:06:00.343Z').getSeconds();
+  const xPredict = tf.tensor1d(x);
+  const yPredict = model.predict(xPredict);
+  const res =  await yPredict.array()
   console.log(res)
-}).catch((e) => {
-  console.log(e.message);
+  toJsonFile(res,"result")
+  //console.log("resultados: "+res.lenght)
+  //const compare = res.filter((e,i)=>e<=y[i])
+  //console.log("Acertos: " + compare.lenght)
+  //console.log("Porcentagem "+ parseFloat(compare.lenght/res.lenght).toFixed(2))
+
 });

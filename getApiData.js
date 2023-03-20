@@ -21,17 +21,28 @@ export const toJsonFile=(data, name)=>{
 
 
 
-const test=async ()=>{
-    const res = await getApiData('2023-03-16', '2023-03-16', 1)
-    const records = res.records
-    const pages = res.total_pages
+/*const test=async (inicio,fim)=>{
+    const res = await getApiData(inicio,fim, 1)
+    let records = res.records
+    let pages = parseFloat(res.total_pages)
     console.log("resultados: "+records.length)
     console.log("paginas: "+pages)
 
+    let i = 1
+    while(pages > 0){
+
+        i = i + 1
+        console.log("Pagina: "+i)
+        const newRes = await getApiData(inicio,fim, i)
+        
+        records = [...records, ...newRes.records]
+
+        pages = pages - 1
+    }
 
 
 
     toJsonFile(records, "test")   
  }
 
-test()
+test('2023-01-01', '2023-02-28')*/
