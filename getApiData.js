@@ -21,7 +21,7 @@ export const toJsonFile=(data, name)=>{
 
 
 
-/*const test=async (inicio,fim)=>{
+export const test=async (inicio,fim)=>{
     const res = await getApiData(inicio,fim, 1)
     let records = res.records
     let pages = parseFloat(res.total_pages)
@@ -39,10 +39,9 @@ export const toJsonFile=(data, name)=>{
 
         pages = pages - 1
     }
+    return records
 
-
-
-    toJsonFile(records, "test")   
+    
  }
 
-test('2023-01-01', '2023-02-28')*/
+//test('2023-01-01', '2023-02-28')*/
